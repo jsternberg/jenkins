@@ -38,6 +38,7 @@ THE SOFTWARE.
       <p:config-retryCount />
       <p:config-blockWhenUpstreamBuilding />
       <p:config-blockWhenDownstreamBuilding />
+      <p:config-culpritStrategy />
       <f:optionalBlock name="customWorkspace" title="${%Use custom workspace}"
                        checked="${instance.customWorkspace!=null or instance.hasChildCustomWorkspace()}"
                        help="/help/project-config/custom-workspace.html">

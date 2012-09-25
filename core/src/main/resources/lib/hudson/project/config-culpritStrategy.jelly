@@ -1,0 +1,9 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:p="/lib/hudson/project">
+  <j:set var="descriptors" value="${descriptor.getApplicableCulpritStrategyDescriptors(instance)}"/>
+  <j:if test="${descriptors.size() gt 0}">
+    <f:optionalBlock name="culpritStrategy" title="${%Use custom culprit finding strategy}" checked="${it.culpritStrategy!=null}">
+      <f:dropdownDescriptorSelector title="${%Culprit Strategy}" descriptors="${descriptors}" />
+    </f:optionalBlock>
+  </j:if>
+</j:jelly>

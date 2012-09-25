@@ -61,6 +61,8 @@ THE SOFTWARE.
       <p:config-retryCount />
       <p:config-blockWhenUpstreamBuilding />
       <p:config-blockWhenDownstreamBuilding />
+      <p:config-culpritStrategy />
+
       <st:include page="configure-advanced.jelly" optional="true" />
       <f:entry title="${%Display Name}" field="displayNameOrNull">
          <f:textbox checkUrl="'${rootURL}/checkDisplayName?displayName='+encodeURIComponent(this.value)+'&amp;jobName='+encodeURIComponent('${it.name}')"/>

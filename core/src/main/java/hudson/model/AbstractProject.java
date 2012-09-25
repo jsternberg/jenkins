@@ -82,6 +82,8 @@ import hudson.util.EditDistance;
 import hudson.util.FormValidation;
 import hudson.widgets.BuildHistoryWidget;
 import hudson.widgets.HistoryWidget;
+import jenkins.model.CulpritStrategy;
+import jenkins.model.CulpritStrategyDescriptor;
 import jenkins.model.Jenkins;
 import jenkins.scm.DefaultSCMCheckoutStrategyImpl;
 import jenkins.scm.SCMCheckoutStrategy;
@@ -152,6 +154,11 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
      * State returned from {@link SCM#poll(AbstractProject, Launcher, FilePath, TaskListener, SCMRevisionState)}.
      */
     private volatile transient SCMRevisionState pollingBaseline = null;
+
+    /**
+     * Controls how build culprits are found.
+     */
+    private volatile CulpritStrategy culpritStrategy;
 
     /**
      * All the builds keyed by their build number.
@@ -542,6 +549,15 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
 
     public int getScmCheckoutRetryCount() {
         return scmCheckoutRetryCount !=null ? scmCheckoutRetryCount : Jenkins.getInstance().getScmCheckoutRetryCount();
+    }
+
+    public CulpritStrategy getCulpritStrategy() {
+        return culpritStrategy;
+    }
+
+    public void setCulpritStrategy(CulpritStrategy culpritStrategy) throws IOException {
+        this.culpritStrategy = culpritStrategy;
+        save();
     }
 
     // ugly name because of EL
@@ -1775,6 +1791,11 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
         else
             scmCheckoutStrategy = null;
 
+        if (json.has("culpritStrategy"))
+            culpritStrategy = req.bindJSON(CulpritStrategy.class,
+                json.getJSONObject("culpritStrategy"));
+        else
+            culpritStrategy = null;
         
         if(req.getParameter("hasSlaveAffinity")!=null) {
             assignedNode = Util.fixEmptyAndTrim(req.getParameter("_.assignedLabelString"));
@@ -2023,6 +2044,10 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
 
         public List<SCMCheckoutStrategyDescriptor> getApplicableSCMCheckoutStrategyDescriptors(AbstractProject p) {
             return SCMCheckoutStrategyDescriptor._for(p);
+        }
+
+        public List<CulpritStrategyDescriptor> getApplicableCulpritStrategyDescriptors(AbstractProject p) {
+            return CulpritStrategyDescriptor._for(p);
         }
 
         /**

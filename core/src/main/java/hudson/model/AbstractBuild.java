@@ -61,6 +61,7 @@ import hudson.util.IOException2;
 import hudson.util.Iterators;
 import hudson.util.LogTaskListener;
 import hudson.util.VariableResolver;
+import jenkins.model.CulpritStrategy;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
@@ -303,6 +304,12 @@ public abstract class AbstractBuild<P extends AbstractProject<P,R>,R extends Abs
     @Exported
     public Set<User> getCulprits() {
         if (culprits==null) {
+            // If we have a custom culprit finding strategy, use it instead.
+            CulpritStrategy culpritStrategy = getProject().getCulpritStrategy();
+            if (culpritStrategy != null) {
+                return culpritStrategy.getCulprits(this);
+            }
+
             Set<User> r = new HashSet<User>();
             R p = getPreviousCompletedBuild();
             if (p !=null && isBuilding()) {
